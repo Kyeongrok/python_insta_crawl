@@ -9,28 +9,20 @@ from selenium.webdriver.common.by import By
 # rootPath = os.path.split(os.environ['VIRTUAL_ENV'])[0]
 rootPath = ".."
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+# chrome_options.add_argument("--headless")
 driver = webdriver.Chrome(
     executable_path="{}/chrome/chromedriver".format(rootPath),
     options=chrome_options
 )
-driver.implicitly_wait(5)
-
-def parse(pageString):
-
-    bsObj = BeautifulSoup(pageString, "html.parser")
-    ul = bsObj.find("div", {"class":"Nnq7C weEfm"})
-    print(ul)
 
 url = "https://instagram.com/explore/tags/발레"
 print(url)
 driver.get(url)
 
-wait = WebDriverWait(driver, 10)
+wait = WebDriverWait(driver, 2)
 wait.until(
-    EC.presence_of_element_located((By.CSS_SELECTOR, ".Nnq7C"))
+    EC.presence_of_element_located((By.CSS_SELECTOR, ".EZdmt"))
 )
 pageString = driver.page_source
-parse(pageString)
 driver.close()
 
