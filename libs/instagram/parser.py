@@ -7,13 +7,9 @@ def getPostInfo(post):
 
 def parse(pageString):
     bsObj = BeautifulSoup(pageString, "html.parser")
-
     posts = bsObj.findAll("div", {"class":"v1Nh3"})
     postInfos = []
-
     for post in posts:
         postInfo = getPostInfo(post)
-        print(postInfo)
-
-    print(len(posts))
-
+        postInfos.append(postInfo)
+    return postInfos
