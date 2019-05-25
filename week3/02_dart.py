@@ -13,7 +13,6 @@ driver.find_element_by_id("textCrpNm")\
 
 driver.find_element_by_xpath("//*[@id='searchForm']/fieldset/p[4]/input")\
     .click()
-
 pageString = driver.page_source
 print(pageString)
 
