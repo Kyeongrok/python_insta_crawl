@@ -22,9 +22,8 @@ time.sleep(3)
 trs = driver.find_element_by_xpath('//*[@id="corpListContents"]/div/fieldset/div[1]/table/tbody').find_elements_by_tag_name('tr')
 
 
-for rowNum in range(1, len(trs) + 1):
-    driver.find_element_by_xpath('//*[@id="corpListContents"]/div/fieldset/div[1]/table/tbody/tr[{}]/td[1]'.format(rowNum))\
-        .find_element_by_css_selector('#checkCorpSelect').click()
-
+# for rowNum in range(1, len(trs) + 1):
+#     driver.find_element_by_xpath('//*[@id="corpListContents"]/div/fieldset/div[1]/table/tbody/tr[{}]/td[1]'.format(rowNum))\
+#         .find_element_by_css_selector('#checkCorpSelect').click()
 
 
