@@ -7,5 +7,6 @@ file.close()
 
 print(pageString)
 
+#
 productInfo = parse(pageString)
 print(productInfo)
