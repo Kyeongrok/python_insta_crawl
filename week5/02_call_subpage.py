@@ -8,12 +8,6 @@ urlsString = file.read()
 urls = json.loads(urlsString)
 print(len(urls))
 
-def parseSubPage(pageString):
-    bsObj = BeautifulSoup(pageString, "html.parser")
-    title = bsObj.find("h2", {"class":"prod-buy-header__title"})
-    reviewers = bsObj.find("span",{"class":"prod-buy-header__productreview"})
-    count = reviewers.find("span", {"class":"count"})
-    return {"title":title.text, "count":count.text}
 
 
 productInfos = []
