@@ -4,6 +4,6 @@ from libs.patternMatchedTextGetter import getMatchedText
 file = open("cell.txt")
 text = file.read()
 
-result = getMatchedText("셀트리온.{1}", text)
+result = getMatchedText("셀트리온[가-힣]{0,9}", text)
 print(result)
 print(len(result))

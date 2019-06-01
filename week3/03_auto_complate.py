@@ -14,5 +14,5 @@ file.write(bsObj.text)
 # text를 file에서 불러오려면?
 text = bsObj.text
 
-result = getMatchedText("셀트리온.{1}", text)
+result = getMatchedText("셀트리온.*", text)
 print(result)
