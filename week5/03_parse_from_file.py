@@ -1,12 +1,20 @@
 from libs.coupang.subpageParser import parse
 
+productInfos = []
 # 파일 읽기
-file = open("./pages/0.html", encoding="utf-8")
-pageString = file.read()
-file.close()
+def openAndParse(num):
+    file = open("./pages/{}.html".format(num), encoding="utf-8")
+    pageString = file.read()
+    file.close()
+    productInfo = parse(pageString)
+    return productInfo
 
-print(pageString)
+for i in range(0, 1000):
+    print(i)
+    productInfos.append(openAndParse(i))
 
-#
-productInfo = parse(pageString)
-print(productInfo)
+print("total:", len(productInfos))
+
+import json
+file = open("./result.json", "w+")
+file.write(json.dumps(productInfos))

@@ -11,10 +11,10 @@ print(len(urls))
 
 
 productInfos = []
-for num in range(0, len(urls)):
+for num in range(0, len(urls))[:2]:
     print(num)
     pageString = crawl(urls[num])
-    file = open("./pages/{}.html".format(num), "w+")
+    file = open("./pages/{}.html".format(num), "w+", encoding="utf-8")
     file.write(str(pageString))
     file.close()
 
