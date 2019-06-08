@@ -5,11 +5,13 @@ def parseSubpage(pageString):
     bsObj = BeautifulSoup(pageString, "html.parser")
     title = bsObj.find("h2", {"class":"prod-buy-header__title"})
     count = bsObj.find("span", {"class":"count"})
-    price = ""
+    price = 0
     try:
         price = bsObj.find("span", {"class":"total-price"})
         price = price.text.strip() # 10,000원
         price = price.replace("원", "").replace(",", "")
+        if(price == ""): price = 0
+        print(price)
     except Exception as e:
         print("--error during parse--", title, e )
 
