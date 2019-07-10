@@ -27,6 +27,10 @@ driver.find_element_by_id("inputPW") \
 
 driver.find_element_by_xpath("/html/body/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr[3]/td/table/tbody/tr[1]/td[1]/table/tbody/tr[4]/td/table/tbody/tr/td[2]/table/tbody/tr/td[2]/table/tbody/tr[2]/td/a/img").click()
 
+def checkIsEnabledAndSleep(textarea):
+    if (textarea.is_enabled() == False):
+        print("------is_enabled() False then plus 5 sec -----")
+        time.sleep(5)
 
 def run(chapterUrl):
     driver.get(chapterUrl)
@@ -46,11 +50,9 @@ def run(chapterUrl):
         textarea = ps[1].find_element_by_tag_name("textarea")
         time.sleep(rndInt)
 
-        if(textarea.is_enabled() == False):
-            time.sleep(5)
-        print(textarea.tag_name)
-        print(textarea.is_enabled())
-        print(textarea.is_selected())
+        checkIsEnabledAndSleep(textarea)
+        checkIsEnabledAndSleep(textarea)
+
         textarea.send_keys(statement)
         time.sleep(1)
         textarea.send_keys(Keys.RETURN)
