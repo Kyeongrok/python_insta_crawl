@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 import random
 
 chrome_options = Options()
-# chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless")
 
 rootPath = ".."
 driver = webdriver.Chrome(
@@ -21,9 +21,9 @@ driver.find_elements_by_class_name("h-btn01")[1]\
 
 
 driver.find_element_by_id("inputID")\
-     .send_keys("oceanfog")
+     .send_keys("hardroad2")
 driver.find_element_by_id("inputPW") \
-    .send_keys("4rhat1249")
+    .send_keys("ckdghks2")
 
 driver.find_element_by_xpath("/html/body/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr[3]/td/table/tbody/tr[1]/td[1]/table/tbody/tr[4]/td/table/tbody/tr/td[2]/table/tbody/tr/td[2]/table/tbody/tr[2]/td/a/img").click()
 
@@ -52,18 +52,24 @@ def run(chapterUrl):
 
         checkIsEnabledAndSleep(textarea)
         checkIsEnabledAndSleep(textarea)
+        checkIsEnabledAndSleep(textarea)
+        checkIsEnabledAndSleep(textarea)
+        checkIsEnabledAndSleep(textarea)
 
         textarea.send_keys(statement)
         time.sleep(1)
         textarea.send_keys(Keys.RETURN)
         time.sleep(1)
 
-for chapter in range(5, 5 + 1):
-    print("{}장".format(chapter))
-    chapterUrl = "http://bible.godpia.com/write/sub020302.asp?cb_idx=602&ver=gae&vol=mrk&chap={}&secindex=1".format(chapter)
-    run(chapterUrl)
-    time.sleep(20)
+def call(bookName, fr, to):
+    for chapter in range(fr, to + 1):
+        print("{}장".format(chapter))
+        chapterUrl = "http://bible.godpia.com/write/sub020302.asp?cb_idx=602&ver=gae&vol={}&chap={}&secindex=1".format(bookName, chapter)
+        run(chapterUrl)
+        time.sleep(60)
 
+#1pe 벧전 #2pe벧후3 1jn요일 5 계rev
+call("rev", 1, 12)
 
 
 
