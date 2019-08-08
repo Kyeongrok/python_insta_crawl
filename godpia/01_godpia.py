@@ -9,7 +9,7 @@ chrome_options.add_argument("--headless")
 
 rootPath = ".."
 driver = webdriver.Chrome(
-    executable_path="{}/chrome/chromedriver74".format(rootPath),
+    executable_path="{}/chrome/chromedriver76".format(rootPath),
     options=chrome_options
 )
 
@@ -21,9 +21,9 @@ driver.find_elements_by_class_name("h-btn01")[1]\
 
 
 driver.find_element_by_id("inputID")\
-     .send_keys("hardroad2")
+     .send_keys("oceanfog")
 driver.find_element_by_id("inputPW") \
-    .send_keys("ckdghks2")
+    .send_keys("4rhat1249")
 
 driver.find_element_by_xpath("/html/body/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr[3]/td/table/tbody/tr[1]/td[1]/table/tbody/tr[4]/td/table/tbody/tr/td[2]/table/tbody/tr/td[2]/table/tbody/tr[2]/td/a/img").click()
 
@@ -69,7 +69,7 @@ def call(bookName, fr, to):
         time.sleep(60)
 
 #1pe 벧전 #2pe벧후3 1jn요일 5 계rev
-call("rev", 1, 12)
+call("ezk", 21, 30)
 
 
 
