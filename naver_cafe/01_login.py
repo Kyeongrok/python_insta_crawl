@@ -3,35 +3,35 @@ import time
 
 driver = getDriver()
 
-url = "https://www.naver.com/"
-
-# driver.get(url)
 # driver.find_element_by_xpath('//*[@id="account"]/div/a').click()
-#
+# #
 # #id
-# driver.find_element_by_xpath('//*[@id="id"]').send_keys("oceanfog")
-# driver.find_element_by_xpath('//*[@id="pw"]').send_keys("1234@Aoeu")
+# driver.find_element_by_xpath('//*[@id="id"]').send_keys("")
+# driver.find_element_by_xpath('//*[@id="pw"]').send_keys("")
 # # login button
 # driver.find_element_by_xpath('//*[@id="frmNIDLogin"]/fieldset/input').click()
 # time.sleep(2)
 
 
-url = "https://cafe.naver.com/joonggonara"
+url = "https://cafe.naver.com/remonterrace"
 driver.get(url)
+
+def writeToFile(pageString, fileName):
+    file = open(fileName, "w+")
+    file.write(pageString)
 
 def findKeywordDate(keyword, fromDate, toDate):
     keywordInput = driver.find_element_by_xpath('//*[@id="topLayerQueryInput"]')
     keywordInput.send_keys(keyword)
 
-
     driver.find_element_by_xpath('//*[@id="cafe-search"]/form/button').click()
 
     driver.switch_to_frame("cafe_main")
-    time.sleep(3)
+    time.sleep(2)
 
-    # list size
-    # driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/a').click()
-    # driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/ul/li[7]/a').click()
+    # list size 50
+    driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/a').click()
+    driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/ul/li[7]/a').click()
 
     # 검색기간 버튼 누르기
     driver.find_element_by_xpath('//*[@id="currentSearchDateTop"]').click()
@@ -56,8 +56,10 @@ def findKeywordDate(keyword, fromDate, toDate):
     nextButton = None
     prevButton = None
     pagingItems = 0
+    pageCount = 0
+    # 마지막 페이지를 클릭한다
     try:
-        nextButton = driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[11]')
+        nextButton = driver.find_element_by_css_selector('#main-area > div.prev-next > a.pgR > span')
     except:
         print("next button is None")
 
@@ -66,13 +68,34 @@ def findKeywordDate(keyword, fromDate, toDate):
     except:
         print("pagingItems is null")
 
-    print("{} {} {}".format(nextButton, prevButton, len(pagingItems)))
-
-    # 마지막 페이지를 클릭한다
-
-    pageCount = 0
     # item개수를 센다
     while nextButton != None:
+        try:
+            prevNext = driver.find_element_by_xpath('//*[@id="main-area"]/div[7]')
+        except:
+            prevNext = None
+            print("prevNext is null")
+
+        try:
+            nextButton = driver.find_element_by_css_selector('#main-area > div.prev-next > a.pgR > span')
+        except:
+            nextButton = None
+            print("next button is None")
+
+        try:
+            prevButton = driver.find_element_by_css_selector('#main-area > div.prev-next > a.pgL > span')
+        except:
+            prevButton = None
+            print("prev button is None")
+
+        try:
+            pagingItems = prevNext.find_elements_by_tag_name("a")
+        except:
+            pagingItems = 0
+            print("pagingItems is null")
+
+        print("isNextButton:{} isPrevButton:{} {}".format(nextButton != None, prevButton != None, len(pagingItems)))
+
         # 다음은 있고 이전이 없고 개수가 11개 -> 첫 페이지 인데 500개 이상
         if(nextButton != None and prevButton == None and len(pagingItems) == 11):
             print("첫 페이지 다음 버튼을 누른다")
@@ -83,23 +106,27 @@ def findKeywordDate(keyword, fromDate, toDate):
             print("nth page 다음 버튼을 누른다")
             nextButton.click()
             pageCount += 1
+        time.sleep(2)
 
     # 다음이 없고 이전만 있고 개수가 11개 미만 -> 마지막 페이지
     if(nextButton == None and prevButton != None and len(pagingItems) < 11):
-        print("마지막 페이지에 가서 개수를 센다")
+        print("마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{}".format(len(pagingItems)))
+        # //*[@id="main-area"]/div[7]/a[1] <prev
+        # //*[@id="main-area"]/div[7]/a[2]
+        driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(len(pagingItems))).click()
 
     # 다음이 없고 이전도 없고 개수가 10개 이하
     elif(nextButton == None and prevButton == None and len(pagingItems) <= 10):
-        print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다")
+        print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다pagingItemsCnt:{}".format(len(pagingItems)))
+        driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(len(pagingItems))).click()
 
-findKeywordDate("감기", "2018-01-01", "2019-01-31")
+    pageString = driver.page_source
+    writeToFile(pageString, "./gamgiLast.html")
+    print(pageCount)
 
 
-# driver.switch_to_frame("cafe_main")
-# pageString = driver.page_source
-#
-# file = open("./joonggonara_gamgi.html", "w+")
-# file.write(pageString)
+pageCount = findKeywordDate("감기", "2018-01-01", "2019-01-31")
+print("result:", pageCount)
 
 
 time.sleep(30)

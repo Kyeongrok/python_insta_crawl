@@ -1,21 +1,5 @@
-from bs4 import BeautifulSoup
+from naver_cafe.parser.cafeBoardSearchParser import parse
 
-def getRow(tr):
-    tds = tr.findAll("td")
-    for td in tds:
-        print(td)
-    print(len(tds))
-
-def parse(pageString):
-    bsObj = BeautifulSoup(pageString, "html.parser")
-    articleBoards = bsObj.findAll("div", {"class":"article-board result-board m-tcol-c"})
-    table = articleBoards[0].find("table")
-    trs = table.find("tbody").findAll("tr")
-    tr = trs[0]
-    print(getRow(tr))
-
-    return []
-
-file = open("joonggonara_gamgi.html")
+file = open("./joonggonara_gamgi.html")
 pageString = file.read()
 list = parse(pageString)
