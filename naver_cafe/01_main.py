@@ -53,7 +53,9 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     nextButton = None
     prevButton = None
     pagingItems = 0
+    pagingItemCount = 0
     pageCount = 0
+    divNodata = None
     # 마지막 페이지를 클릭한다
     try:
         nextButton = driver.find_element_by_css_selector('#main-area > div.prev-next > a.pgR > span')
@@ -64,6 +66,12 @@ def findKeywordDate(url, keyword, fromDate, toDate):
         pagingItems = prevNext.find_elements_by_tag_name("a")
     except:
         print("pagingItems is null")
+
+    try:
+        divNodata = driver.find_element_by_css_selector('document.querySelector("#main-area > div:nth-child(7) > table > tbody > tr > td > div")')
+    except:
+        divNodata = None
+        print("divNodata is not exist")
 
     # item개수를 센다
     while nextButton != None:
@@ -87,42 +95,56 @@ def findKeywordDate(url, keyword, fromDate, toDate):
 
         try:
             pagingItems = prevNext.find_elements_by_tag_name("a")
+            pagingItemCount = len(pagingItems)
         except:
-            pagingItems = 0
+            pagingItems = None
+            pagingItemCount = 0
             print("pagingItems is null")
 
-        print("isNextButton:{} isPrevButton:{} {}".format(nextButton != None, prevButton != None, len(pagingItems)))
+        try:
+            divNodata = driver.find_element_by_css_selector('document.querySelector("#main-area > div:nth-child(7) > table > tbody > tr > td > div")')
+        except:
+            divNodata = None
+            print("divNodata is not exist")
+
+        print("isNextButton:{} isPrevButton:{} {}".format(nextButton != None, prevButton != None, pagingItemCount))
 
         # 다음은 있고 이전이 없고 개수가 11개 -> 첫 페이지 인데 500개 이상
-        if(nextButton != None and prevButton == None and len(pagingItems) == 11):
+        if(nextButton != None and prevButton == None and pagingItemCount == 11):
             print("첫 페이지 다음 버튼을 누른다")
             nextButton.click()
             pageCount += 1
         # 이전과 다음이 있고 개수가 12개
-        elif(nextButton != None and prevButton != None and len(pagingItems) == 12):
+        elif(nextButton != None and prevButton != None and pagingItemCount == 12):
             print("nth page 다음 버튼을 누른다")
             nextButton.click()
             pageCount += 1
         time.sleep(2)
 
     # 다음이 없고 이전만 있고 개수가 11개 미만 -> 마지막 페이지
-    if(nextButton == None and prevButton != None and len(pagingItems) < 11):
-        print("마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount), len(pagingItems))
+    if(nextButton == None and prevButton != None and pagingItemCount < 11):
+        print("마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount), pagingItemCount)
         # //*[@id="main-area"]/div[7]/a[1] <prev
         # //*[@id="main-area"]/div[7]/a[2]
-        driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(len(pagingItems))).click()
+        driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(pagingItemCount)).click()
 
+    # 다음이 없고 이전도 없고 페이징도 0개
+    elif (nextButton == None and prevButton == None and pagingItemCount == 0):
+        print("검색 결과가 없음")
+        pagingItemCount = 1
     # 다음이 없고 이전도 없고 개수가 10개 이하
-    elif(nextButton == None and prevButton == None and len(pagingItems) <= 10):
-        print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount, len(pagingItems)))
-        driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(len(pagingItems))).click()
+    elif(nextButton == None and prevButton == None and pagingItemCount <= 10):
+        print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount, pagingItemCount))
+        driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(pagingItemCount)).click()
+    elif(nextButton == None and prevButton == None and pageCount == 0 and pagingItems == 12):
+        pagingItemCount = 1
     else:
-        print("----------------")
+        print("--pageCount:{} pagingItems:{}-".format(pageCount, pagingItemCount))
 
     pageString = driver.page_source
     lastPageItemCount = parse(pageString)
     cafeName = url.split("clubid=")[1]
-    total = (pageCount * 10 * 50) + (len(pagingItems) - 1) * 50 + lastPageItemCount
+    total = (pageCount * 10 * 50) + (pagingItemCount - 1) * 50 + lastPageItemCount
     return {"cafeName": cafeName, "keyword":keyword, "fromDate":fromDate, "toDate":toDate, "total":total}
 
 
@@ -194,7 +216,7 @@ cafeIdList = [
 ]
 
 url = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid={}'.format(cafeIdList[0]['id'])
-collectKeywordCount(url, "./{}.json".format(cafeIdList[0]['cafeName']), keywordList, dateList)
+collectKeywordCount(url, "./{}.json".format(cafeIdList[0]['cafeName']), keywordList[:1], dateList[:1])
 
 time.sleep(30)
 driver.close()
