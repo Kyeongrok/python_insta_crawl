@@ -1,4 +1,5 @@
 from libs.driverGetter import getDriver
+from naver_cafe.parser.cafeBoardSearchParser import parse
 import time
 
 driver = getDriver()
@@ -13,14 +14,9 @@ driver = getDriver()
 # time.sleep(2)
 
 
-url = "https://cafe.naver.com/remonterrace"
-driver.get(url)
-
-def writeToFile(pageString, fileName):
-    file = open(fileName, "w+")
-    file.write(pageString)
-
 def findKeywordDate(keyword, fromDate, toDate):
+    url = "https://cafe.naver.com/remonterrace"
+    driver.get(url)
     keywordInput = driver.find_element_by_xpath('//*[@id="topLayerQueryInput"]')
     keywordInput.send_keys(keyword)
 
@@ -110,24 +106,51 @@ def findKeywordDate(keyword, fromDate, toDate):
 
     # 다음이 없고 이전만 있고 개수가 11개 미만 -> 마지막 페이지
     if(nextButton == None and prevButton != None and len(pagingItems) < 11):
-        print("마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{}".format(len(pagingItems)))
+        print("마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount), len(pagingItems))
         # //*[@id="main-area"]/div[7]/a[1] <prev
         # //*[@id="main-area"]/div[7]/a[2]
         driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(len(pagingItems))).click()
 
     # 다음이 없고 이전도 없고 개수가 10개 이하
     elif(nextButton == None and prevButton == None and len(pagingItems) <= 10):
-        print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다pagingItemsCnt:{}".format(len(pagingItems)))
+        print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount, len(pagingItems)))
         driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(len(pagingItems))).click()
 
     pageString = driver.page_source
-    writeToFile(pageString, "./gamgiLast.html")
-    print(pageCount)
+    lastPageItemCount = parse(pageString)
+    return {"fromDate":fromDate, "toDate":toDate, "total":(pageCount * 10 * 50) + (len(pagingItems) - 1) * 50 + lastPageItemCount}
 
+dateList = [
+    {"fromDate":"2018-01-01", "toDate":"2018-01-31"},
+    {"fromDate":"2018-02-01", "toDate":"2018-02-28"},
+    {"fromDate":"2018-03-01", "toDate":"2018-03-31"},
+    {"fromDate":"2018-04-01", "toDate":"2018-04-30"},
+    {"fromDate":"2018-05-01", "toDate":"2018-05-31"},
+    {"fromDate":"2018-06-01", "toDate":"2018-06-30"},
+    {"fromDate":"2018-07-01", "toDate":"2018-07-31"},
+    {"fromDate":"2018-08-01", "toDate":"2018-08-31"},
+    {"fromDate":"2018-09-01", "toDate":"2018-09-30"},
+    {"fromDate":"2018-10-01", "toDate":"2018-10-31"},
+    {"fromDate":"2018-11-01", "toDate":"2018-11-30"},
+    {"fromDate":"2018-12-01", "toDate":"2018-12-31"},
+    {"fromDate":"2019-01-01", "toDate":"2019-01-31"},
+    {"fromDate":"2019-02-01", "toDate":"2019-02-28"},
+    {"fromDate":"2019-03-01", "toDate":"2019-03-31"},
+    {"fromDate":"2019-04-01", "toDate":"2019-04-30"},
+    {"fromDate":"2019-05-01", "toDate":"2019-05-31"},
+    {"fromDate":"2019-06-01", "toDate":"2019-06-30"},
+    {"fromDate":"2019-07-01", "toDate":"2019-07-31"},
+]
 
-pageCount = findKeywordDate("감기", "2018-01-01", "2019-01-31")
-print("result:", pageCount)
+resultList = []
+for date in dateList:
+    res = findKeywordDate("감기", date['fromDate'], date['toDate'])
+    resultList.append(res)
+    print("result:", res)
 
+import json
+file = open("./ret_gamgi.json", "w+")
+file.write(json.dumps(resultList))
 
 time.sleep(30)
 driver.close()

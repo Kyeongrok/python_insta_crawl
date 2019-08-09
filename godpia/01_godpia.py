@@ -69,7 +69,7 @@ def call(bookName, fr, to):
         time.sleep(60)
 
 #1pe 벧전 #2pe벧후3 1jn요일 5 계rev
-call("ezk", 21, 30)
+call("jer", 21, 30)
 
 
 
