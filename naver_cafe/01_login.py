@@ -1,6 +1,8 @@
 from libs.driverGetter import getDriver
 from naver_cafe.parser.cafeBoardSearchParser import parse
 import time
+import json
+from datetime import datetime
 
 driver = getDriver()
 
@@ -14,8 +16,7 @@ driver = getDriver()
 # time.sleep(2)
 
 
-def findKeywordDate(keyword, fromDate, toDate):
-    url = "https://cafe.naver.com/remonterrace"
+def findKeywordDate(url, keyword, fromDate, toDate):
     driver.get(url)
     keywordInput = driver.find_element_by_xpath('//*[@id="topLayerQueryInput"]')
     keywordInput.send_keys(keyword)
@@ -118,7 +119,8 @@ def findKeywordDate(keyword, fromDate, toDate):
 
     pageString = driver.page_source
     lastPageItemCount = parse(pageString)
-    return {"fromDate":fromDate, "toDate":toDate, "total":(pageCount * 10 * 50) + (len(pagingItems) - 1) * 50 + lastPageItemCount}
+    cafeName = url.split("/")[1]
+    return {"cafeName": cafeName, "keyword":keyword, "fromDate":fromDate, "toDate":toDate, "total":(pageCount * 10 * 50) + (len(pagingItems) - 1) * 50 + lastPageItemCount}
 
 dateList = [
     {"fromDate":"2018-01-01", "toDate":"2018-01-31"},
@@ -142,15 +144,42 @@ dateList = [
     {"fromDate":"2019-07-01", "toDate":"2019-07-31"},
 ]
 
-resultList = []
-for date in dateList:
-    res = findKeywordDate("감기", date['fromDate'], date['toDate'])
-    resultList.append(res)
-    print("result:", res)
+def getResultList(cafeUrl, keyword):
+    resultList = []
+    for date in dateList:
+        print(cafeUrl, keyword, date)
+        res = findKeywordDate(cafeUrl, keyword, date['fromDate'], date['toDate'])
+        resultList.append(res)
+    return resultList
 
-import json
-file = open("./ret_gamgi.json", "w+")
-file.write(json.dumps(resultList))
+keywordList = [
+    {"keyword":"락토핏"},
+    {"keyword":"엘레나"},
+    {"keyword":"프로스랩"},
+    {"keyword":"아임비오"},
+    {"keyword":"자로우펨도피러스"},
+    {"keyword":"셀티아이"},
+    {"keyword":"여에스더"},
+    {"keyword":"애터미"},
+    {"keyword":"암웨이"},
+    {"keyword":"레이디스밸런스"},
+    {"keyword":"듀오락"},
+    {"keyword":"닥터아돌"},
+    {"keyword":"락피도"},
+    {"keyword":"드시모네"}
+]
+
+
+print(datetime.now())
+aa = []
+for keyword in keywordList:
+    url = "https://cafe.naver.com/remonterrace"
+    aa = aa + getResultList(url, keyword['keyword'])
+
+print(datetime.now())
+
+file = open("./01_remon.json", "w+")
+file.write(json.dumps(aa))
 
 time.sleep(30)
 driver.close()
