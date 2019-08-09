@@ -122,6 +122,34 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     cafeName = url.split("/")[1]
     return {"cafeName": cafeName, "keyword":keyword, "fromDate":fromDate, "toDate":toDate, "total":(pageCount * 10 * 50) + (len(pagingItems) - 1) * 50 + lastPageItemCount}
 
+
+
+def getResultList(cafeUrl, keyword, dateList):
+    resultList = []
+    for date in dateList:
+        print(cafeUrl, keyword, date)
+        res = findKeywordDate(cafeUrl, keyword, date['fromDate'], date['toDate'])
+        resultList.append(res)
+    return resultList
+
+
+keywordList = [
+    "락토핏",
+    "엘레나",
+    "프로스랩",
+    "아임비오",
+    "자로우펨도피러스",
+    "셀티아이",
+    "여에스더",
+    "애터미",
+    "암웨이",
+    "레이디스밸런스",
+    "듀오락",
+    "닥터아돌",
+    "락피도",
+    "드시모네"
+]
+
 dateList = [
     {"fromDate":"2018-01-01", "toDate":"2018-01-31"},
     {"fromDate":"2018-02-01", "toDate":"2018-02-28"},
@@ -144,42 +172,20 @@ dateList = [
     {"fromDate":"2019-07-01", "toDate":"2019-07-31"},
 ]
 
-def getResultList(cafeUrl, keyword):
-    resultList = []
-    for date in dateList:
-        print(cafeUrl, keyword, date)
-        res = findKeywordDate(cafeUrl, keyword, date['fromDate'], date['toDate'])
-        resultList.append(res)
-    return resultList
+def collectKeywordCount(cafeUrl, fileName, keywordList, dateList):
+    print(datetime.now())
+    aa = []
+    for keyword in keywordList:
 
-keywordList = [
-    {"keyword":"락토핏"},
-    {"keyword":"엘레나"},
-    {"keyword":"프로스랩"},
-    {"keyword":"아임비오"},
-    {"keyword":"자로우펨도피러스"},
-    {"keyword":"셀티아이"},
-    {"keyword":"여에스더"},
-    {"keyword":"애터미"},
-    {"keyword":"암웨이"},
-    {"keyword":"레이디스밸런스"},
-    {"keyword":"듀오락"},
-    {"keyword":"닥터아돌"},
-    {"keyword":"락피도"},
-    {"keyword":"드시모네"}
-]
+        aa = aa + getResultList(cafeUrl, keyword, dateList)
 
+    print(datetime.now())
 
-print(datetime.now())
-aa = []
-for keyword in keywordList:
-    url = "https://cafe.naver.com/remonterrace"
-    aa = aa + getResultList(url, keyword['keyword'])
+    file = open(fileName, "w+")
+    file.write(json.dumps(aa))
 
-print(datetime.now())
+collectKeywordCount("https://cafe.naver.com/remonterrace", "./01_remon.json", keywordList, dateList)
 
-file = open("./01_remon.json", "w+")
-file.write(json.dumps(aa))
 
 time.sleep(30)
 driver.close()
