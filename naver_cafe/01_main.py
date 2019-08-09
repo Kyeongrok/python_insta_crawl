@@ -24,7 +24,6 @@ def findKeywordDate(url, keyword, fromDate, toDate):
 
     #검색 버튼
     driver.find_element_by_xpath('//*[@id="main-area"]/div[1]/div[1]/form/div[4]/button').click()
-    time.sleep(1)
 
     # list size 50
     driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/a').click()
@@ -33,19 +32,16 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     # 검색기간 버튼 누르기
     driver.find_element_by_xpath('//*[@id="currentSearchDateTop"]').click()
 
-    time.sleep(1)
     fromDateInputBox = driver.find_element_by_xpath('//*[@id="input_1_top"]')
     fromDateInputBox.clear()
     fromDateInputBox.send_keys(fromDate)
     fromDateInputBox.send_keys(Keys.TAB)
 
-    time.sleep(1)
 
     toDateInputBox = driver.find_element_by_xpath('//*[@id="input_2_top"]')
     toDateInputBox.clear()
     toDateInputBox.send_keys(toDate)
     fromDateInputBox.send_keys(Keys.TAB)
-    time.sleep(1)
 
     # 설정 버튼
     setupButton = driver.find_element_by_xpath('//*[@id="btn_set_top"]')
@@ -126,7 +122,7 @@ def findKeywordDate(url, keyword, fromDate, toDate):
             print("nth page 다음 버튼을 누른다")
             nextButton.click()
             pageCount += 1
-        time.sleep(1.5)
+        time.sleep(1)
 
     # 다음이 없고 이전만 있고 개수가 11개 미만 -> 마지막 페이지
     if(nextButton == None and prevButton != None and pagingItemCount < 11):
@@ -160,30 +156,13 @@ def findKeywordDate(url, keyword, fromDate, toDate):
 def getResultList(cafeUrl, keyword, dateList):
     resultList = []
     for date in dateList:
-        print(cafeUrl, keyword, date)
+        time.sleep(1)
         res = findKeywordDate(cafeUrl, keyword, date['fromDate'], date['toDate'])
-        print(res)
         resultList.append(res)
         time.sleep(1)
     return resultList
 
 
-keywordList = [
-    "락토핏",
-    "엘레나",
-    "프로스랩",
-    "아임비오",
-    "자로우펨도피러스",
-    "셀티아이",
-    "여에스더",
-    "애터미",
-    "암웨이",
-    "레이디스밸런스",
-    "듀오락",
-    "닥터아돌",
-    "락피도",
-    "드시모네"
-]
 
 dateList = [
     {"fromDate":"2018-01-01", "toDate":"2018-01-31"},
@@ -207,18 +186,17 @@ dateList = [
     {"fromDate":"2019-07-01", "toDate":"2019-07-31"},
 ]
 
-def collectKeywordCount(cafeUrl, fileName, keywordList, dateList):
+def collectKeywordCount(cafeUrl, cafeName, keywordList, dateList):
     print(datetime.now())
     aa = []
     for keyword in keywordList:
         result = getResultList(cafeUrl, keyword, dateList)
         print(result)
-        aa = aa + result
+        file = open("./{}/{}.json".format(cafeName, keyword), "w+")
+        file.write(json.dumps(result))
 
     print(datetime.now())
 
-    file = open(fileName, "w+")
-    file.write(json.dumps(aa))
 
 cafeIdList = [
     {"id":"10298136", "cafeName":"remonterrace"},
@@ -232,11 +210,27 @@ cafeIdList = [
     {"id":"10298136", "cafeName":"remonterrace"},
 ]
 
+keywordList = [
+    "락토핏",
+    "엘레나",
+    "프로스랩",
+    "아임비오",
+    "자로우펨도피러스",
+    "셀티아이",
+    "여에스더",
+    "애터미",
+    "암웨이",
+    "레이디스밸런스",
+    "듀오락",
+    "닥터아돌",
+    "락피도",
+    "드시모네"
+]
 idx = 0
 url = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid={}'.format(cafeIdList[idx]['id'])
 driver.get(url)
 driver.switch_to_frame("cafe_main")
-collectKeywordCount(url, "./{}.json".format(cafeIdList[idx]['cafeName']), keywordList, dateList)
+collectKeywordCount(url, cafeIdList[idx]['cafeName'], keywordList, dateList)
 
 time.sleep(30)
 driver.close()
