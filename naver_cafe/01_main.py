@@ -216,7 +216,7 @@ cafeIdList = [
 ]
 
 url = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid={}'.format(cafeIdList[0]['id'])
-collectKeywordCount(url, "./{}.json".format(cafeIdList[0]['cafeName']), keywordList[:1], dateList[:1])
+collectKeywordCount(url, "./{}.json".format(cafeIdList[0]['cafeName']), keywordList, dateList)
 
 time.sleep(30)
 driver.close()
