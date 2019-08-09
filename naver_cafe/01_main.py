@@ -3,6 +3,7 @@ from naver_cafe.parser.cafeBoardSearchParser import parse
 import time
 import json
 from datetime import datetime
+from selenium.webdriver.common.keys import Keys
 
 driver = getDriver()
 
@@ -17,9 +18,8 @@ driver = getDriver()
 
 
 def findKeywordDate(url, keyword, fromDate, toDate):
-    driver.get(url)
-    driver.switch_to_frame("cafe_main")
     keywordInput = driver.find_element_by_css_selector('#queryTop')
+    keywordInput.clear()
     keywordInput.send_keys(keyword)
 
     #검색 버튼
@@ -37,13 +37,20 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     fromDateInputBox = driver.find_element_by_xpath('//*[@id="input_1_top"]')
     fromDateInputBox.clear()
     fromDateInputBox.send_keys(fromDate)
+    fromDateInputBox.send_keys(Keys.TAB)
+
+    time.sleep(1)
 
     toDateInputBox = driver.find_element_by_xpath('//*[@id="input_2_top"]')
     toDateInputBox.clear()
     toDateInputBox.send_keys(toDate)
+    fromDateInputBox.send_keys(Keys.TAB)
+    time.sleep(1)
 
+    # 설정 버튼
     setupButton = driver.find_element_by_xpath('//*[@id="btn_set_top"]')
     setupButton.click()
+    time.sleep(1)
 
     driver.find_element_by_xpath('//*[@id="main-area"]/div[1]/div[1]/form/div[4]/button').click()
 
@@ -119,7 +126,7 @@ def findKeywordDate(url, keyword, fromDate, toDate):
             print("nth page 다음 버튼을 누른다")
             nextButton.click()
             pageCount += 1
-        time.sleep(2)
+        time.sleep(1.5)
 
     # 다음이 없고 이전만 있고 개수가 11개 미만 -> 마지막 페이지
     if(nextButton == None and prevButton != None and pagingItemCount < 11):
@@ -144,7 +151,8 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     pageString = driver.page_source
     lastPageItemCount = parse(pageString)
     cafeName = url.split("clubid=")[1]
-    total = (pageCount * 10 * 50) + (pagingItemCount - 1) * 50 + lastPageItemCount
+    print("pageCount:{} pagingItemCount:{} lastPageItemCount:{}", pageCount, pagingItemCount, lastPageItemCount)
+    total = (pageCount * 10 * 50) + (pagingItemCount - 1) * 50 + (lastPageItemCount // 2)
     return {"cafeName": cafeName, "keyword":keyword, "fromDate":fromDate, "toDate":toDate, "total":total}
 
 
@@ -156,6 +164,7 @@ def getResultList(cafeUrl, keyword, dateList):
         res = findKeywordDate(cafeUrl, keyword, date['fromDate'], date['toDate'])
         print(res)
         resultList.append(res)
+        time.sleep(1)
     return resultList
 
 
@@ -177,25 +186,25 @@ keywordList = [
 ]
 
 dateList = [
-    {"fromDate":"20180101", "toDate":"20180131"},
-    {"fromDate":"20180201", "toDate":"20180228"},
-    {"fromDate":"20180301", "toDate":"20180331"},
-    {"fromDate":"20180401", "toDate":"20180430"},
-    {"fromDate":"20180501", "toDate":"20180531"},
-    {"fromDate":"20180601", "toDate":"20180630"},
-    {"fromDate":"20180701", "toDate":"20180731"},
-    {"fromDate":"20180801", "toDate":"20180831"},
-    {"fromDate":"20180901", "toDate":"20180930"},
-    {"fromDate":"20181001", "toDate":"20181031"},
-    {"fromDate":"20181101", "toDate":"20181130"},
-    {"fromDate":"20181201", "toDate":"20181231"},
-    {"fromDate":"20190101", "toDate":"20190131"},
-    {"fromDate":"20190201", "toDate":"20190228"},
-    {"fromDate":"20190301", "toDate":"20190331"},
-    {"fromDate":"20190401", "toDate":"20190430"},
-    {"fromDate":"20190501", "toDate":"20190531"},
-    {"fromDate":"20190601", "toDate":"20190630"},
-    {"fromDate":"20190701", "toDate":"20190731"},
+    {"fromDate":"2018-01-01", "toDate":"2018-01-31"},
+    {"fromDate":"2018-02-01", "toDate":"2018-02-28"},
+    {"fromDate":"2018-03-01", "toDate":"2018-03-31"},
+    {"fromDate":"2018-04-01", "toDate":"2018-04-30"},
+    {"fromDate":"2018-05-01", "toDate":"2018-05-31"},
+    {"fromDate":"2018-06-01", "toDate":"2018-06-30"},
+    {"fromDate":"2018-07-01", "toDate":"2018-07-31"},
+    {"fromDate":"2018-08-01", "toDate":"2018-08-31"},
+    {"fromDate":"2018-09-01", "toDate":"2018-09-30"},
+    {"fromDate":"2018-10-01", "toDate":"2018-10-31"},
+    {"fromDate":"2018-11-01", "toDate":"2018-11-30"},
+    {"fromDate":"2018-12-01", "toDate":"2018-12-31"},
+    {"fromDate":"2019-01-01", "toDate":"2019-01-31"},
+    {"fromDate":"2019-02-01", "toDate":"2019-02-28"},
+    {"fromDate":"2019-03-01", "toDate":"2019-03-31"},
+    {"fromDate":"2019-04-01", "toDate":"2019-04-30"},
+    {"fromDate":"2019-05-01", "toDate":"2019-05-31"},
+    {"fromDate":"2019-06-01", "toDate":"2019-06-30"},
+    {"fromDate":"2019-07-01", "toDate":"2019-07-31"},
 ]
 
 def collectKeywordCount(cafeUrl, fileName, keywordList, dateList):
@@ -212,11 +221,22 @@ def collectKeywordCount(cafeUrl, fileName, keywordList, dateList):
     file.write(json.dumps(aa))
 
 cafeIdList = [
-    {"id":"10298136", "cafeName":"remonterrace"}
+    {"id":"10298136", "cafeName":"remonterrace"},
+    {"id":"10094499", "cafeName":"imsanbu"},
+    {"id":"10080092", "cafeName":"esyori"},
+    {"id":"10298136", "cafeName":"remonterrace"},
+    {"id":"10298136", "cafeName":"remonterrace"},
+    {"id":"10298136", "cafeName":"remonterrace"},
+    {"id":"10298136", "cafeName":"remonterrace"},
+    {"id":"10298136", "cafeName":"remonterrace"},
+    {"id":"10298136", "cafeName":"remonterrace"},
 ]
 
-url = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid={}'.format(cafeIdList[0]['id'])
-collectKeywordCount(url, "./{}.json".format(cafeIdList[0]['cafeName']), keywordList, dateList)
+idx = 0
+url = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid={}'.format(cafeIdList[idx]['id'])
+driver.get(url)
+driver.switch_to_frame("cafe_main")
+collectKeywordCount(url, "./{}.json".format(cafeIdList[idx]['cafeName']), keywordList, dateList)
 
 time.sleep(30)
 driver.close()
