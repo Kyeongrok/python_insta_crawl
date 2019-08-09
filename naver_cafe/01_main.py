@@ -18,13 +18,13 @@ driver = getDriver()
 
 def findKeywordDate(url, keyword, fromDate, toDate):
     driver.get(url)
-    keywordInput = driver.find_element_by_xpath('//*[@id="topLayerQueryInput"]')
+    driver.switch_to_frame("cafe_main")
+    keywordInput = driver.find_element_by_css_selector('#queryTop')
     keywordInput.send_keys(keyword)
 
-    driver.find_element_by_xpath('//*[@id="cafe-search"]/form/button').click()
-
-    driver.switch_to_frame("cafe_main")
-    time.sleep(2)
+    #검색 버튼
+    driver.find_element_by_xpath('//*[@id="main-area"]/div[1]/div[1]/form/div[4]/button').click()
+    time.sleep(1)
 
     # list size 50
     driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/a').click()
@@ -33,7 +33,7 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     # 검색기간 버튼 누르기
     driver.find_element_by_xpath('//*[@id="currentSearchDateTop"]').click()
 
-    time.sleep(2)
+    time.sleep(1)
     fromDateInputBox = driver.find_element_by_xpath('//*[@id="input_1_top"]')
     fromDateInputBox.clear()
     fromDateInputBox.send_keys(fromDate)
@@ -184,8 +184,12 @@ def collectKeywordCount(cafeUrl, fileName, keywordList, dateList):
     file = open(fileName, "w+")
     file.write(json.dumps(aa))
 
-collectKeywordCount("https://cafe.naver.com/remonterrace", "./01_remon.json", keywordList, dateList)
+cafeIdList = [
+    {"id":"10298136", "cafeName":"remonterrace"}
+]
 
+url = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid={}'.format(cafeIdList[0]['id'])
+collectKeywordCount(url, "./{}.json".format(cafeIdList[0]['cafeName']), keywordList, dateList)
 
 time.sleep(30)
 driver.close()
