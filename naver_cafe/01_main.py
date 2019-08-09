@@ -116,11 +116,14 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     elif(nextButton == None and prevButton == None and len(pagingItems) <= 10):
         print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount, len(pagingItems)))
         driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(len(pagingItems))).click()
+    else:
+        print("----------------")
 
     pageString = driver.page_source
     lastPageItemCount = parse(pageString)
-    cafeName = url.split("/")[1]
-    return {"cafeName": cafeName, "keyword":keyword, "fromDate":fromDate, "toDate":toDate, "total":(pageCount * 10 * 50) + (len(pagingItems) - 1) * 50 + lastPageItemCount}
+    cafeName = url.split("clubid=")[1]
+    total = (pageCount * 10 * 50) + (len(pagingItems) - 1) * 50 + lastPageItemCount
+    return {"cafeName": cafeName, "keyword":keyword, "fromDate":fromDate, "toDate":toDate, "total":total}
 
 
 
@@ -129,6 +132,7 @@ def getResultList(cafeUrl, keyword, dateList):
     for date in dateList:
         print(cafeUrl, keyword, date)
         res = findKeywordDate(cafeUrl, keyword, date['fromDate'], date['toDate'])
+        print(res)
         resultList.append(res)
     return resultList
 
@@ -176,8 +180,9 @@ def collectKeywordCount(cafeUrl, fileName, keywordList, dateList):
     print(datetime.now())
     aa = []
     for keyword in keywordList:
-
-        aa = aa + getResultList(cafeUrl, keyword, dateList)
+        result = getResultList(cafeUrl, keyword, dateList)
+        print(result)
+        aa = aa + result
 
     print(datetime.now())
 
