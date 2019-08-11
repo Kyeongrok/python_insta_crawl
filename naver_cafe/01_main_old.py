@@ -1,5 +1,6 @@
 from libs.driverGetter import getDriver
 from naver_cafe.parser.cafeBoardSearchParser import parse
+from naver_cafe.parser.cafeBoardSearchParser import parse2
 import time
 import json
 from datetime import datetime
@@ -18,40 +19,18 @@ driver = getDriver()
 
 
 def findKeywordDate(url, keyword, fromDate, toDate):
+    driver.get(url)
+    driver.switch_to_frame("cafe_main")
     keywordInput = driver.find_element_by_css_selector('#queryTop')
     keywordInput.clear()
     keywordInput.send_keys(keyword)
 
     #검색 버튼
-    driver.find_element_by_xpath('//*[@id="main-area"]/div[1]/div[1]/form/div[4]/button').click()
-
-    # list size 50
-    driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/a').click()
-    driver.find_element_by_xpath('//*[@id="listSizeSelectDiv"]/ul/li[7]/a').click()
-
-    # 검색기간 버튼 누르기
-    driver.find_element_by_xpath('//*[@id="currentSearchDateTop"]').click()
-
-    fromDateInputBox = driver.find_element_by_xpath('//*[@id="input_1_top"]')
-    fromDateInputBox.clear()
-    fromDateInputBox.send_keys(fromDate)
-    fromDateInputBox.send_keys(Keys.TAB)
-
-
-    toDateInputBox = driver.find_element_by_xpath('//*[@id="input_2_top"]')
-    toDateInputBox.clear()
-    toDateInputBox.send_keys(toDate)
-    fromDateInputBox.send_keys(Keys.TAB)
-
-    # 설정 버튼
-    setupButton = driver.find_element_by_xpath('//*[@id="btn_set_top"]')
-    setupButton.click()
-    time.sleep(1)
-
-    driver.find_element_by_xpath('//*[@id="main-area"]/div[1]/div[1]/form/div[4]/button').click()
+    searchButton = driver.find_element_by_css_selector('#sub-tit > div > form > a:nth-child(13) > img')
+    searchButton.click()
 
     # paging button이 들어있는 박스
-    prevNext = driver.find_element_by_xpath('//*[@id="main-area"]/div[7]')
+    prevNext = driver.find_element_by_css_selector('#main-area > div.prev-next > table')
 
     nextButton = None
     prevButton = None
@@ -61,7 +40,7 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     divNodata = None
     # 마지막 페이지를 클릭한다
     try:
-        nextButton = driver.find_element_by_css_selector('#main-area > div.prev-next > a.pgR > span')
+        nextButton = driver.find_element_by_css_selector('#main-area > div.prev-next > table > tbody > tr > td.pgR > a')
     except:
         print("next button is None")
 
@@ -79,19 +58,19 @@ def findKeywordDate(url, keyword, fromDate, toDate):
     # item개수를 센다
     while nextButton != None:
         try:
-            prevNext = driver.find_element_by_xpath('//*[@id="main-area"]/div[7]')
+            prevNext = driver.find_element_by_css_selector('#main-area > div.prev-next > table')
         except:
             prevNext = None
             print("prevNext is null")
 
         try:
-            nextButton = driver.find_element_by_css_selector('#main-area > div.prev-next > a.pgR > span')
+            nextButton = driver.find_element_by_css_selector('#main-area > div.prev-next > table > tbody > tr > td.pgR > a')
         except:
             nextButton = None
             print("next button is None")
 
         try:
-            prevButton = driver.find_element_by_css_selector('#main-area > div.prev-next > a.pgL > span')
+            prevButton = driver.find_element_by_css_selector('#main-area > div.prev-next > table > tbody > tr > td.pgL > a')
         except:
             prevButton = None
             print("prev button is None")
@@ -136,16 +115,14 @@ def findKeywordDate(url, keyword, fromDate, toDate):
         print("검색 결과가 없음")
         pagingItemCount = 1
     # 다음이 없고 이전도 없고 개수가 10개 이하
-    elif(nextButton == None and prevButton == None and pagingItemCount <= 10):
+    elif(nextButton == None and prevButton == None and pagingItemCount <= 11):
         print("검색결과가 첫페이지 마지막 페이지에 가서 개수를 센다 pagingItemsCnt:{} pagingItems:{}".format(pageCount, pagingItemCount))
         driver.find_element_by_xpath('//*[@id="main-area"]/div[7]/a[{}]'.format(pagingItemCount)).click()
-    elif(nextButton == None and prevButton == None and pageCount == 0 and pagingItems == 12):
-        pagingItemCount = 1
     else:
         print("--pageCount:{} pagingItems:{}-".format(pageCount, pagingItemCount))
 
     pageString = driver.page_source
-    lastPageItemCount = parse(pageString)
+    lastPageItemCount = parse2(pageString)
     cafeName = url.split("clubid=")[1]
     total = (pageCount * 10 * 50) + (pagingItemCount - 1) * 50 + (lastPageItemCount // 2)
     print("total:{} pageCount:{} pagingItemCount:{} lastPageItemCount:{}".format(total, pageCount, pagingItemCount, lastPageItemCount))
@@ -156,7 +133,9 @@ def getResultList(cafeUrl, keyword, dateList):
     resultList = []
     for date in dateList:
         time.sleep(1)
-        res = findKeywordDate(cafeUrl, keyword, date['fromDate'], date['toDate'])
+        searchUrl = cafeUrl + "&search.searchdate={}{}".format(date['fromDate'], date['toDate'])
+        print(searchUrl)
+        res = findKeywordDate(searchUrl, keyword, date['fromDate'], date['toDate'])
         resultList.append(res)
     return resultList
 
@@ -199,9 +178,9 @@ def collectKeywordCount(cafeUrl, cafeName, keywordList, dateList):
 cafeIdList = [
     {"id":"10298136", "cafeName":"remonterrace", "style":"new"},
     {"id":"10094499", "cafeName":"imsanbu", "style":"new"},
-    {"id":"10080092", "cafeName":"esyori", "style":"old"},
     {"id":"12843510", "cafeName":"dochithink", "style":"new"},
-    {"id":"12448054", "cafeName":"isajime", "style":"new"}, # 4
+    {"id":"12448054", "cafeName":"isajime", "style":"new"},
+    {"id":"10080092", "cafeName":"esyori", "style":"old"},
     {"id":"10298136", "cafeName":"remonterrace"},
     {"id":"10298136", "cafeName":"remonterrace"},
     {"id":"10298136", "cafeName":"remonterrace"},
@@ -224,8 +203,9 @@ keywordList = [
     "락피도",
     "드시모네"
 ]
-idx = 1
-url = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid={}'.format(cafeIdList[idx]['id'])
+idx = 4
+url = 'https://cafe.naver.com/ArticleSearchList.nhn?userDisplay=50&search.clubid={}'.format(cafeIdList[idx]['id'])
+
 driver.get(url)
 driver.switch_to_frame("cafe_main")
 collectKeywordCount(url, cafeIdList[idx]['cafeName'], keywordList, dateList)

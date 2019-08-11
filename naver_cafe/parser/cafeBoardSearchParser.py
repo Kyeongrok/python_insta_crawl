@@ -14,3 +14,11 @@ def parse(pageString):
     if("없습니다." in trs[0].text):
         return 0
     return len(trs)
+
+def parse2(pageString):
+    bsObj = BeautifulSoup(pageString, "html.parser")
+    boardBox = bsObj.find("table", {"class":"board-box"})
+    trs = boardBox.find("tbody").findAll("tr")
+    return len(trs)
+
+
