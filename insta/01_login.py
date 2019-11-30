@@ -5,7 +5,7 @@ import sys
 chrome_options = Options()
 # chrome_options.add_argument("--headless")
 driver = webdriver.Chrome(
-    executable_path="{}/chrome/chromedriver74".format(".."),
+    executable_path="{}/chrome/chromedriver77".format(".."),
     options=chrome_options
 )
 
