@@ -22,7 +22,7 @@ driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/article/div
 
 # search
 time.sleep(2)
-url = "https://www.instagram.com/explore/tags/성형/"
+url = "https://www.instagram.com/explore/tags/국립발레단/"
 driver.get(url)
 
 
@@ -40,7 +40,7 @@ def parse(pageString):
 
     return links
 
-time.sleep(3)
+time.sleep(4)
 pageString = driver.page_source
 links = parse(pageString)
 
@@ -53,7 +53,11 @@ for url in links:
         rndSec = random.randint(5, 15)
         time.sleep(rndSec)
         message = "잘 보고 갑니다. 오늘 날씨가 너무 좋네요. 제 인스타도 놀러와주세요. 맞팔 신청합니다."
-        #driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[2]/section[1]/span[1]/button').click()
+
+        #좋아요
+        driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[2]/section[1]/span[1]/button').click()
+
+        #댓글
         driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[2]/section[3]/div/form/textarea').click()
         driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[2]/section[3]/div/form/textarea').send_keys(message)
         driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[2]/section[3]/div/form/button').click()
