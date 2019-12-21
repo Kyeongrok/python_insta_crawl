@@ -21,15 +21,22 @@ time.sleep(2)
 url = "https://www.instagram.com/explore/tags/발레/"
 driver.get(url)
 
-time.sleep(8)
+# 스크롤 하기
+for scrollN in range(2):
+    driver.execute_script(
+        'window.scrollTo(0, document.body.scrollHeight)')
+    time.sleep(2)
+
+time.sleep(5)
 
 pageString = driver.page_source
 
-# file = open("insta.html", "w+", encoding="utf-8")
-# file.write(pageString)
+file = open("insta.html", "w+", encoding="utf-8")
+file.write(pageString)
 
 for link in parse(pageString):
     time.sleep(1)
     driver.get(link)
     driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[2]/section[1]/span[1]/button/span').click()
+
 
