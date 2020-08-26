@@ -16,3 +16,12 @@ def getDriver():
         options=chrome_options
     )
     return driver
+
+def getDriverWithPath(path):
+    chrome_options = Options()
+    # chrome_options.add_argument("--headless")
+    driver = webdriver.Chrome(
+        executable_path=path,
+        options=chrome_options
+    )
+    return driver
