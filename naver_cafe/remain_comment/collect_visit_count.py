@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
+from datetime import datetime
 
 # 30분마다 카페 방문하기
 # 사용 방법
@@ -22,7 +23,7 @@ def print_visit_cnt(url):
     time.sleep(1)
     xpath_visit_cnt = '//*[@id="ia-action-data"]/div[2]/ul/li[1]/em'
     visit_cnt = driver.find_element_by_xpath(xpath_visit_cnt).text
-    print(url, visit_cnt)
+    print(url, visit_cnt, datetime.now())
     time.sleep(2)
 
 urls = [
@@ -32,4 +33,4 @@ urls = [
 for _ in range(5):
     for url in urls:
         print_visit_cnt(url)
-    time.sleep(60 * 30) # 60초 * 30
+    time.sleep(60 * 31) # 60초 * 30
